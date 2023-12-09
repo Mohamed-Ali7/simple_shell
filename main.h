@@ -13,6 +13,10 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <stdio.h>
+#include <limits.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <linux/limits.h>
 
 /* printf helper functions */
 int print_error(const char *format, ...);
@@ -50,20 +54,30 @@ typedef struct builtin_cmd
 	int (*func)(char *command, char *args[]);
 } builtin_cmd;
 
-int get_all_envs(char *command, char *args[]);
+int _envs(char *command, char *args[]);
+char **_environ(void);
+char *_getenv(char *env_name);
+int _setenv(char *command, char *args[]);
+int _unsetenv(char *command, char *args[]);
+
 int exit_process(char *command, char *args[]);
+int _cd(char *command, char *args[]);
+
 ssize_t _getline(char **buf, size_t *size, int fd);
 
 void free_recur(char *args[]);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 
 char **str_split(char *str, char *delim);
+char *trim_delimiters(char *str, char *delim);
 
 char *_strcat(char *dest, char *src);
 char *_strncat(char *dest, char *src, int n);
 char *_strdup(char *str);
 int _strcmp(char *s1, char *s2);
+int _strncmp(char *s1, char *s2, int n);
 int _strlen(char *s);
 char *_strcpy(char *dest, char *src);
 char *_strncpy(char *dest, char *src, int n);
+int custom_atoi(char *s);
 #endif

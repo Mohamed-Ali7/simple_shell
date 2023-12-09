@@ -3,7 +3,7 @@
 char *get_command(char *command);
 int _execve(char *command, char *cmd_full_path, char *args[]);
 void free_recur(char *args[]);
-
+void free_env(char *args[]);
 /**
  * signal_handler - Handles signals and
  * its main purpose here is to handle SIGINT signal to prevent Ctrl + C
@@ -32,10 +32,14 @@ int main(int argc, char *argv[])
 	size_t buf_size = 0;
 	int i, line_len, is_builtin = 0;
 	builtin_cmd b_cmd[] = {
-		{"env", get_all_envs}, {"exit", exit_process}, {NULL, NULL}
+		{"env", _envs}, {"exit", exit_process}, {"setenv", _setenv},
+		{"unsetenv", _unsetenv}, {"cd", _cd}, {NULL, NULL}
 	};
 
 	(void) (argc);
+	environ = _environ();
+		if (environ == NULL)
+			exit(-100);
 	name = argv[0];
 	signal(SIGINT, signal_handler);
 	while (true)
@@ -65,6 +69,7 @@ int main(int argc, char *argv[])
 
 		if (args[0][0] == ';' || args[0][0]  == '&' || args[0][0] == '|')
 		{
+			buf_size = INT_MAX;
 			print_error("%s: %d: Syntax error: \"%c\" unexpected\n",
 						name, counter, *args[0]);
 			free_recur(args);
@@ -75,10 +80,8 @@ int main(int argc, char *argv[])
 		{
 			if (_strcmp(b_cmd[i].cmd, args[0]) == 0)
 			{
-				if (_strcmp(args[0], "exit") == 0)
-					free(command);
 
-				b_cmd[i].func(args[0], args);
+				b_cmd[i].func(command, args);
 				is_builtin = 1;
 				break;
 			}
@@ -89,7 +92,7 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		cmd = get_command(args[0]);
-		if (cmd == NULL || (access(cmd, F_OK) == -1))
+		if (cmd == NULL || (access(cmd, X_OK) == -1))
 		{
 			if (errno == EACCES)
 			{
@@ -104,7 +107,7 @@ int main(int argc, char *argv[])
 		_execve(command, cmd, args);
 		free_recur(args), free(cmd);
 	}
-	free(command);
+	free(command), free_recur(environ);
 	return (0);
 }
 
@@ -132,7 +135,7 @@ int _execve(char *command, char *cmd_full_path, char *args[])
 				if (errno == EACCES)
 				{
 					print_error("%s: %d: %s: Permission denied\n", name, counter, command);
-					free_recur(args), free(cmd_full_path), free(command);
+					free_recur(args), free(cmd_full_path), free(command), free_recur(environ);
 					exec_result = 126;
 					exit(126);
 
@@ -157,13 +160,17 @@ int _execve(char *command, char *cmd_full_path, char *args[])
 */
 char *get_command(char *command)
 {
-	char *path = getenv("PATH");
+	char *path = _getenv("PATH");
 	char **tokens;
-	char *command_path = malloc(sizeof(char) * 1024);
-	char *cpy_path = _strdup(path);
+	char *command_path;
+	char *cpy_path;
 	char *cmd;
 	int i;
 
+	if (path == NULL)
+		return (NULL);
+	command_path = malloc(sizeof(char) * 1024);
+	cpy_path = _strdup(path);
 	if (command_path == NULL)
 		exit(1);
 	if (access(command, X_OK) == 0)
@@ -211,4 +218,3 @@ void free_recur(char *args[])
 	free(args[i]);
 	free(args);
 }
-

@@ -16,20 +16,22 @@ ssize_t _getline(char **buf, size_t *size, int fd)
 	ssize_t line_len, alloc_size = 0, i;
 	char *ptr = NULL, *new_buf = NULL, c = '\0';
 
-	(void) (size);
+	if (*size == INT_MAX)
+	{
+		*size = 0, buffer_index = 0;
+	}
 	ptr = *buf;
 	if (buffer_index == 0)
 	{
 		while (c != '\n')
 		{
-			line_len = read(fd, buffer, 1024);
+			line_len = read(fd, buffer + buffer_index, 1024);
 			if (line_len == -1 || (line_len == 0 && buffer_index == 0))
 				return (-1);
-
 			if (line_len == 0 && buffer_index != 0)
 				break;
-			c = buffer[line_len - 1];
 			buffer_index += line_len;
+			c = buffer[buffer_index - 1];
 		}
 	}
 	for (i = command_len; i < buffer_index; i++)
@@ -41,13 +43,11 @@ ssize_t _getline(char **buf, size_t *size, int fd)
 	new_buf = _realloc(ptr, 0, alloc_size + 1);
 	if (new_buf == NULL)
 		return (-1);
-
 	_strncpy(new_buf, buffer + command_len, alloc_size);
 	command_len += alloc_size;
 	if (command_len == buffer_index)
 	{
-		command_len = 0;
-		buffer_index = 0;
+		command_len = 0, buffer_index = 0;
 	}
 	*buf = new_buf;
 	return (alloc_size);
