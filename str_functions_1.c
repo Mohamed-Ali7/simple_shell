@@ -45,7 +45,7 @@ char *_strdup(char *str)
 
 	if (copiedStr == NULL)
 	{
-		return (NULL);
+		exit(1);
 	}
 
 	for (i = 0; i <= len; i++)

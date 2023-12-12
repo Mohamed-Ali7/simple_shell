@@ -26,15 +26,16 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 
 	rst = malloc(new_size);
 
+	if (rst == NULL)
+	{
+		return (NULL);
+	}
+
 	if (ptr == NULL)
 	{
 		return (rst);
 	}
 
-	if (rst == NULL)
-	{
-		return (NULL);
-	}
 	while (i < old_size)
 	{
 		rst[i] = ((char *)ptr)[i];

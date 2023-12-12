@@ -73,35 +73,18 @@ char **_environ(void)
 */
 char *_getenv(char *env_name)
 {
-	int index = 0, var_index = 0, j;
-	char *result = NULL, *tmp, delim = '\0', holder;
+	int index = 0, env_len = 0;
+	char *result = NULL;
+
+	env_len = _strlen(env_name);
 
 	if (environ == NULL)
 		return (NULL);
-
 	for (index = 0; environ[index] != NULL; index++)
 	{
-
-		j = 0;
-		while (environ[index][j] != '\0')
+		if (_strncmp(environ[index], env_name, env_len) == 0)
 		{
-			if (environ[index][j] == '=')
-			{
-				holder = environ[index][j];
-				environ[index][j] = '\0';
-				tmp = environ[index];
-				if (_strcmp(tmp, env_name) == 0)
-				{
-					delim = '=';
-					var_index = j;
-				}
-				environ[index][j] = holder;
-			}
-			j++;
-		}
-		if (delim == '=')
-		{
-			result = environ[index] + var_index + 1;
+			result = environ[index] + env_len + 1;
 			break;
 		}
 	}

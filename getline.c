@@ -26,8 +26,10 @@ ssize_t _getline(char **buf, size_t *size, int fd)
 		while (c != '\n')
 		{
 			line_len = read(fd, buffer + buffer_index, 1024);
-			if (line_len == -1 || (line_len == 0 && buffer_index == 0))
+			if (line_len == -1)
 				return (-1);
+			if (line_len == 0 && buffer_index == 0)
+				return (-2);
 			if (line_len == 0 && buffer_index != 0)
 				break;
 			buffer_index += line_len;
@@ -46,9 +48,7 @@ ssize_t _getline(char **buf, size_t *size, int fd)
 	_strncpy(new_buf, buffer + command_len, alloc_size);
 	command_len += alloc_size;
 	if (command_len == buffer_index)
-	{
 		command_len = 0, buffer_index = 0;
-	}
 	*buf = new_buf;
 	return (alloc_size);
 }
