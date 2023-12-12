@@ -8,13 +8,13 @@
 */
 int exit_process(char *command, char *args[])
 {
-	int exit_status = 0;
+	int exit_arg = 0;
 
 	(void) (command);
 	if (args[1] != NULL)
 	{
-		exit_status = custom_atoi(args[1]);
-		if (exit_status == -1)
+		exit_arg = custom_atoi(args[1]);
+		if (exit_arg == -1)
 		{
 			print_error("%s: %d: %s: Illegal number: %s\n",
 					name, counter, args[0], args[1]);
@@ -23,13 +23,13 @@ int exit_process(char *command, char *args[])
 		free(command);
 		free_recur(args);
 		free_recur(environ);
-		if (exit_status > 255)
-			exit_status %= 256;
-		exit(exit_status);
+		if (exit_arg > 255)
+			exit_arg %= 256;
+		exit(exit_arg);
 	}
 	free(command);
 	free_recur(environ);
 	free_recur(args);
-	exit(0);
+	exit(exit_status);
 	return (0);
 }

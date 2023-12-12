@@ -109,3 +109,20 @@ int _strncmp(char *s1, char *s2, int n)
 
 	return (result);
 }
+
+/**
+ * free_recur - frees variables of type pointer to ponter recursevly
+ * @args: Is the pointer to free
+ * Return: void
+*/
+void free_recur(char *args[])
+{
+	int i;
+
+	for (i = 0; args[i] != NULL; i++)
+	{
+		free(args[i]);
+	}
+	free(args[i]);
+	free(args);
+}

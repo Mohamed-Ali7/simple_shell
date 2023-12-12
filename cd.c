@@ -22,7 +22,15 @@ int _cd(char *command, char *args[])
 	if (args[1] == NULL)
 		exec_status = _home();
 	else if (args[1][0] == '-')
+	{
 		exec_status = _recent_directory(args[1]);
+		if (exec_status == -2)
+		{
+			write(STDOUT_FILENO, old_pwd, _strlen(old_pwd));
+			write(STDOUT_FILENO, "\n", 1);
+			exec_status = 0;
+		}
+	}
 	else
 	{
 		if (stat(args[1], &st) != 0)
@@ -103,7 +111,7 @@ int _recent_directory(char *arg)
 		return (2);
 	}
 	if (dir == NULL)
-		return (-1);
+		return (-2);
 
 	if (chdir(dir) == -1)
 	{

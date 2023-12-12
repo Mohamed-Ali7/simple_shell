@@ -41,6 +41,7 @@ typedef struct specifier_format
 extern char **environ;
 extern int counter;
 extern char *name;
+extern int exit_status;
 
 
 /**
@@ -64,12 +65,16 @@ int exit_process(char *command, char *args[]);
 int _cd(char *command, char *args[]);
 
 ssize_t _getline(char **buf, size_t *size, int fd);
+char *line_commands(char *command_line);
 
 void free_recur(char *args[]);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 
 char **str_split(char *str, char *delim);
 char *trim_delimiters(char *str, char *delim);
+int is_delim(char c, char *delimiters);
+char *remove_extra_speaces(char *str);
+int remove_quote(char **str);
 
 char *_strcat(char *dest, char *src);
 char *_strncat(char *dest, char *src, int n);
