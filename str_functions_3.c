@@ -106,7 +106,7 @@ char *trim_delimiters(char *str, char *delim)
 		str_len--;
 	}
 	str_len++;
-	new_str = malloc(sizeof(char) * str_len + 1);
+	new_str = malloc(sizeof(char) * (str_len + 1));
 	if (new_str == NULL)
 	{
 		free(str);
