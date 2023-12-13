@@ -52,29 +52,3 @@ ssize_t _getline(char **buf, size_t *size, int fd)
 	*buf = new_buf;
 	return (alloc_size);
 }
-
-/**
- * open_file - Opens a file
- * @file_name: Is the name of the file to open
- * Return: The file descriptor or -1 if it faild to open the file
-*/
-int open_file(char *file_name)
-{
-	int fd;
-
-	fd = open(file_name, O_RDONLY);
-
-	if (fd == -1)
-	{
-		if (errno == EACCES)
-			exit(126);
-
-		if (errno == ENOENT)
-		{
-			print_error("%s: 0: cannot open %s: No such file\n", name, file_name);
-			exit(127);
-		}
-		exit(1);
-	}
-	return (fd);
-}
