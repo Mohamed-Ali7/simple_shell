@@ -125,3 +125,38 @@ char *trim_delimiters(char *str, char *delim)
 	free(str);
 	return (new_str);
 }
+
+#include "main.h"
+/**
+* int_to_string - Converts an integer to string
+* @i: Is the number to convert
+* Return: String that contais the number as characters
+*/
+
+char *int_to_string(int i)
+{
+	int number_len = 0;
+	unsigned int tmp = i;
+	char *nums = NULL;
+
+	while (tmp != 0)
+	{
+		tmp = tmp / 10;
+		if (tmp > 0)
+			number_len++;
+	}
+	if (tmp == 0)
+		number_len++;
+
+	nums = malloc(sizeof(char) * (number_len + 1));
+	nums[number_len] = '\0';
+
+	while (number_len >= 1)
+	{
+		nums[number_len - 1] = (i % 10) + '0';
+		i = i / 10;
+		number_len--;
+	}
+
+	return (nums);
+}

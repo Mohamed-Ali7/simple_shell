@@ -87,6 +87,7 @@ int is_found(alias_list *head, char *name);
 
 ssize_t _getline(char **buf, size_t *size, int fd);
 char *line_commands(char *command_line);
+void replace_variable(char *args[]);
 
 void free_recur(char *args[]);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
@@ -96,6 +97,7 @@ char *trim_delimiters(char *str, char *delim);
 int is_delim(char c, char *delimiters);
 char *remove_extra_speaces(char *str);
 int remove_quote(char **str);
+char *int_to_string(int i);
 
 char *_strcat(char *dest, char *src);
 char *_strncat(char *dest, char *src, int n);

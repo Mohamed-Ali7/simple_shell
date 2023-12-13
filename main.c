@@ -2,6 +2,7 @@
 
 char *get_command(char *command);
 int _execve(char *command, char *cmd_full_path, char *args[]);
+void remove_comments(char *command);
 
 /**
  * signal_handler - Handles signals and
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
 		}
 		command = remove_extra_speaces(command);
 		command = trim_delimiters(command, " \n\t");
+		remove_comments(command);
 		while ((filterd_command = line_commands(command)) != NULL)
 		{
 			counter++;
@@ -94,7 +96,7 @@ int main(int argc, char *argv[])
 				free(filterd_command), exit_status = 127;
 				continue;
 			}
-
+			replace_variable(args);
 			for (i = 0; b_cmd[i].cmd != NULL; i++)
 			{
 				if (_strcmp(b_cmd[i].cmd, args[0]) == 0)
@@ -238,3 +240,29 @@ char *get_command(char *command)
 	return (NULL);
 }
 
+/**
+ * remove_comments - Reomves comment from the command
+ * @command: Is the command to remove the comments from
+ * Return: void
+*/
+void remove_comments(char *command)
+{
+	int i;
+
+	for (i = 0; command[i] != '\0'; i++)
+	{
+		if (command[i] == '#')
+		{
+			if (i == 0)
+			{
+				command[i] = '\0';
+				break;
+			}
+			else if (i != 0 && command[i - 1] == ' ')
+			{
+				command[i - 1] = '\0';
+				break;
+			}
+		}
+	}
+}
