@@ -217,4 +217,43 @@ char *check_syntax_error(char *command)
 	return (NULL);
 }
 
+/**
+ * replace_variable - Replaces variables ($) with it values
+ * @args: Are the argument to check for variables
+ * Return: void
+*/
+void replace_variable(char *args[])
+{
+	int i = 0;
+	char *tmp = NULL;
 
+	while (args[i] != NULL)
+	{
+		if (args[i][0] == '$' && args[i][1] == '$')
+		{
+			free(args[i]);
+			args[i] = int_to_string(getpid());
+		}
+		else if (args[i][0] == '$' && args[i][1] == '?')
+		{
+			free(args[i]);
+			args[i] = int_to_string(exit_status);
+		}
+		else if (args[i][0] == '$' && args[i][1] != '\0')
+		{
+			tmp = _getenv((args[i]) + 1);
+			free(args[i]);
+			if (tmp == NULL)
+			{
+				args[i] = malloc(sizeof(char) * 1);
+				args[i][0] = '\0';
+			}
+			else
+			{
+			args[i] = malloc(sizeof(char) * (_strlen(tmp) + 1));
+			_strcpy(args[i], tmp);
+			}
+		}
+		i++;
+	}
+}
