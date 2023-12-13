@@ -40,16 +40,9 @@ int main(int argc, char *argv[])
 	};
 
 	name = argv[0];
-	if (argc == 2)
-	{
+	if (argc != 1)
 		fd = open_file(argv[1]);
-		if (fd == -1)
-		{
-			print_error("%s: %d: cannot open %s: No such file\n"
-				, name, counter, argv[1]);
-			return (2);
-		}
-	}
+
 	environ = _environ();
 		if (environ == NULL)
 			exit(-100);
