@@ -62,16 +62,19 @@ int open_file(char *file_name)
 {
 	int fd;
 
-	if (file_name == NULL)
-	{
-		return (-1);
-	}
-
 	fd = open(file_name, O_RDONLY);
 
 	if (fd == -1)
 	{
-		return (-1);
+		if (errno == EACCES)
+			exit(126);
+
+		if (errno == ENOENT)
+		{
+			print_error("%s: 0: cannot open %s: No such file\n", name, file_name);
+			exit(127);
+		}
+		exit(1);
 	}
 	return (fd);
 }
