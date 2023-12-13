@@ -138,7 +138,6 @@ void print_all_alias(alias_list *head)
 		tmp = tmp->next;
 	}
 }
-
 /**
  * check_alias - Checks if the command is a stored alias
  * @command: Is the command to check

@@ -68,10 +68,8 @@ int main(int argc, char *argv[])
 				exit_status = 1;
 			break;
 		}
-
 		command = remove_extra_speaces(command);
 		command = trim_delimiters(command, " \n\t");
-
 		while ((filterd_command = line_commands(command)) != NULL)
 		{
 			counter++;
@@ -119,6 +117,7 @@ int main(int argc, char *argv[])
 				if (args[0] == NULL)
 				{
 					print_error("%s: %d: %s: not found\n", name, counter, args[0]);
+					free_recur(args), free(filterd_command);
 					exit_status = 127;
 				}
 			cmd = get_command(args[0]);
@@ -199,7 +198,7 @@ int _execve(char *command, char *cmd_full_path, char *args[])
 char *get_command(char *command)
 {
 	char *path = _getenv("PATH");
-	char **tokens, *command_path, *cpy_path, *cmd;
+	char **tokens, *command_path, *cpy_path;
 	int i;
 
 	command_path = malloc(sizeof(char) * (_strlen(command) + 700));
@@ -212,28 +211,30 @@ char *get_command(char *command)
 	}
 	cpy_path = _strdup(path);
 	if (cpy_path == NULL)
+	{
+		free(command_path);
 		return (NULL);
-	cmd = malloc(sizeof(char) * _strlen(command) + 2);
-	if (cmd == NULL)
-		return (NULL);
-	cmd[0] = '/';
-	cmd[1] = '\0';
-	_strcat(cmd, command);
+	}
+
 	tokens = str_split(cpy_path, ":");
 	if (tokens == NULL)
+	{
+		free(command_path), free(cpy_path);
 		return (NULL);
+	}
 	for (i = 0; tokens[i] != NULL; i++)
 	{
 		_strcpy(command_path, tokens[i]);
-		_strcat(command_path, cmd);
+		_strcat(command_path, "/");
+		_strcat(command_path, command);
 
 		if (access(command_path, X_OK) == 0)
 		{
-			free(cmd), free(cpy_path), free_recur(tokens);
+			free(cpy_path), free_recur(tokens);
 			return (command_path);
 		}
 	}
-	free(cmd), free(cpy_path), free(command_path), free_recur(tokens);
+	free(cpy_path), free(command_path), free_recur(tokens);
 	return (NULL);
 }
 
