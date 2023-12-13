@@ -94,12 +94,12 @@ char *trim_delimiters(char *str, char *delim)
 	if (str == NULL)
 		return (NULL);
 	str_len = _strlen(str) - 1;
-	while (is_delim(str[str_len], delim) && str_len >= 0)
+	while (str_len >= 0 && is_delim(str[str_len], delim))
 	{
 		str[str_len] = '\0';
 		str_len--;
 	}
-	while (is_delim(str[str_start], delim) && str_len >= 0)
+	while (str_len >= 0 && is_delim(str[str_start], delim))
 	{
 		str[str_start] = '\0';
 		str_start++;
