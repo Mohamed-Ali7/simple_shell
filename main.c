@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 		{"env", _envs}, {"exit", exit_process}, {"setenv", _setenv},
 		{"unsetenv", _unsetenv}, {"cd", _cd}, {"alias", _alias}, {NULL, NULL}
 	};
-
+	name = argv[0];
 	if (argc == 2)
 	{
 		fd = open_file(argv[1]);
