@@ -31,7 +31,7 @@ alias_list *head;
 int main(int argc, char *argv[])
 {
 	char *command = NULL, *cmd = NULL, *delim = " \n\t", **args = NULL;
-	char *filterd_command = NULL;
+	char *filterd_command = NULL, fd = STDIN_FILENO;
 	size_t buf_size = 0;
 	int i, line_len, is_builtin = 0, flag = 0;
 	builtin_cmd b_cmd[] = {
@@ -39,19 +39,27 @@ int main(int argc, char *argv[])
 		{"unsetenv", _unsetenv}, {"cd", _cd}, {"alias", _alias}, {NULL, NULL}
 	};
 
-	(void) (argc);
+	if (argc == 2)
+	{
+		fd = open_file(argv[1]);
+		if (fd == -1)
+		{
+			print_error("%s: %d: cannot open %s: No such file\n"
+				, name, counter, argv[1]);
+			return (2);
+		}
+	}
 	environ = _environ();
 		if (environ == NULL)
 			exit(-100);
-	name = argv[0];
 	signal(SIGINT, signal_handler);
 	while (true)
 	{
 		line_len = 0;
-		if (isatty(STDIN_FILENO))
+		if (isatty(fd))
 			write(STDOUT_FILENO, "$ ", 2);
 
-		line_len = _getline(&command, &buf_size, STDIN_FILENO);
+		line_len = _getline(&command, &buf_size, fd);
 		if (line_len == 1)
 		{
 			if (*command == '\n')
@@ -63,7 +71,7 @@ int main(int argc, char *argv[])
 
 		if (line_len == -1 || line_len == -2)
 		{
-			if (isatty(STDIN_FILENO))
+			if (isatty(fd))
 				write(STDOUT_FILENO, "\n", 1);
 			if (line_len == -1)
 				exit_status = 1;
@@ -145,6 +153,8 @@ int main(int argc, char *argv[])
 		}
 	}
 	free(command), free_recur(environ), free_alias_list(head);
+	if (fd != STDIN_FILENO)
+		close(fd);
 	return (exit_status);
 }
 
