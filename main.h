@@ -16,7 +16,7 @@
 #include <limits.h>
 #include <dirent.h>
 #include <sys/stat.h>
-#include <linux/limits.h>
+#include <fcntl.h>
 
 /* printf helper functions */
 int print_error(const char *format, ...);
@@ -85,6 +85,7 @@ int is_alias_to_set(char *arg);
 void free_alias_list(alias_list *head);
 int is_found(alias_list *head, char *name);
 
+int open_file(char *file_name);
 ssize_t _getline(char **buf, size_t *size, int fd);
 char *line_commands(char *command_line);
 void replace_variable(char *args[]);
