@@ -23,6 +23,7 @@ int exit_process(char *command, char *args[])
 		free(command);
 		free_recur(args);
 		free_recur(environ);
+		free_alias_list(head);
 		if (exit_arg > 255)
 			exit_arg %= 256;
 		exit(exit_arg);
@@ -30,6 +31,7 @@ int exit_process(char *command, char *args[])
 	free(command);
 	free_recur(environ);
 	free_recur(args);
+	free_alias_list(head);
 	exit(exit_status);
 	return (0);
 }

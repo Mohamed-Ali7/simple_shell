@@ -20,6 +20,7 @@ void signal_handler(int sig)
 int counter;
 char *name;
 int exit_status;
+alias_list *head;
 /**
  * main - Entry point
  * @argc: The number of command line arguments
@@ -31,10 +32,10 @@ int main(int argc, char *argv[])
 	char *command = NULL, *cmd = NULL, *delim = " \n\t", **args = NULL;
 	char *filterd_command = NULL;
 	size_t buf_size = 0;
-	int i, line_len, is_builtin = 0;
+	int i, line_len, is_builtin = 0, flag = 0;
 	builtin_cmd b_cmd[] = {
 		{"env", _envs}, {"exit", exit_process}, {"setenv", _setenv},
-		{"unsetenv", _unsetenv}, {"cd", _cd}, {NULL, NULL}
+		{"unsetenv", _unsetenv}, {"cd", _cd}, {"alias", _alias}, {NULL, NULL}
 	};
 
 	(void) (argc);
@@ -75,6 +76,7 @@ int main(int argc, char *argv[])
 		{
 			counter++;
 			is_builtin = 0;
+			flag = 0;
 			if (filterd_command[0] == ';' || filterd_command[0]  == '&' ||
 			filterd_command[0] == '|')
 			{
@@ -85,6 +87,7 @@ int main(int argc, char *argv[])
 				counter--;
 				continue;
 			}
+
 			if (remove_quote(&filterd_command) == -1)
 				free(command), exit(1);
 			args = str_split(filterd_command, delim);
@@ -93,10 +96,13 @@ int main(int argc, char *argv[])
 				free(filterd_command), exit_status = 127;
 				continue;
 			}
+
 			for (i = 0; b_cmd[i].cmd != NULL; i++)
 			{
 				if (_strcmp(b_cmd[i].cmd, args[0]) == 0)
 				{
+					if (_strcmp(b_cmd[i].cmd, "exit") == 0)
+						free(filterd_command), flag = 1;
 					exit_status = b_cmd[i].func(command, args);
 					is_builtin = 1;
 					break;
@@ -104,9 +110,17 @@ int main(int argc, char *argv[])
 			}
 			if (is_builtin)
 			{
-				free_recur(args), free(filterd_command);
+				free_recur(args);
+				if (!flag)
+					free(filterd_command);
 				continue;
 			}
+			args[0] = check_alias(args[0]);
+				if (args[0] == NULL)
+				{
+					print_error("%s: %d: %s: not found\n", name, counter, args[0]);
+					exit_status = 127;
+				}
 			cmd = get_command(args[0]);
 			if (cmd == NULL || (access(cmd, X_OK) == -1))
 			{
@@ -129,7 +143,7 @@ int main(int argc, char *argv[])
 			free_recur(args), free(cmd), free(filterd_command);
 		}
 	}
-	free(command), free_recur(environ);
+	free(command), free_recur(environ), free_alias_list(head);
 	return (exit_status);
 }
 

@@ -55,6 +55,21 @@ typedef struct builtin_cmd
 	int (*func)(char *command, char *args[]);
 } builtin_cmd;
 
+/**
+ * struct alias - Is a linked list struct of aliases
+ * @name: Is the name of the alias
+ * @value: Is the value of the alias
+ * @next: Is a pointer to the next alias in the list
+*/
+typedef struct alias
+{
+	char *name;
+	char *value;
+	struct alias *next;
+} alias_list;
+
+extern alias_list *head;
+
 int _envs(char *command, char *args[]);
 char **_environ(void);
 char *_getenv(char *env_name);
@@ -63,6 +78,12 @@ int _unsetenv(char *command, char *args[]);
 
 int exit_process(char *command, char *args[]);
 int _cd(char *command, char *args[]);
+
+int _alias(char *command, char *args[]);
+char *check_alias(char *command);
+int is_alias_to_set(char *arg);
+void free_alias_list(alias_list *head);
+int is_found(alias_list *head, char *name);
 
 ssize_t _getline(char **buf, size_t *size, int fd);
 char *line_commands(char *command_line);
