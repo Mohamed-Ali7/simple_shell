@@ -54,7 +54,7 @@ int remove_quote(char **str)
 
 	for (i = 0; (*str)[i] != '\0'; i++)
 	{
-		if ((*str)[i] == '\"')
+		if ((*str)[i] == '\"' || (*str)[i] == '\'')
 			continue;
 		new_index++;
 	}
@@ -66,7 +66,7 @@ int remove_quote(char **str)
 	new_index = 0;
 	for (i = 0; (*str)[i] != '\0'; i++)
 	{
-		if ((*str)[i] == '\"')
+		if ((*str)[i] == '\"' || (*str)[i] == '\'')
 			continue;
 		new_str[new_index] = (*str)[i];
 		new_index++;
