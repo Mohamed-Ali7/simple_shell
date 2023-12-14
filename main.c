@@ -45,9 +45,8 @@ int main(int argc, char *argv[])
 		fd = open_file(argv[1]);
 		if (fd == -1)
 		{
-			print_error("%s: %d: cannot open %s: No such file\n",
-					name, counter, argv[1]);
-			return (2);
+			print_error("%s: %d: Can't open %s\n", name, counter, argv[1]);
+			return (127);
 		}
 	}
 	environ = _environ();
